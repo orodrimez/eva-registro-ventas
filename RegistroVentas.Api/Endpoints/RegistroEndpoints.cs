@@ -9,6 +9,7 @@ public static class RegistroEndpoints
     {
         var registros = app.MapGroup("/registros") .RequireAuthorization("RolValido");
 
+
         registros.MapPost("", async (RegistrarVentaRequest request, IRegistroOperacionService service, CancellationToken cancellationToken) =>
         {
             var result = await service.RegistrarVentaAsync(request, cancellationToken);
@@ -25,14 +26,20 @@ public static class RegistroEndpoints
                 _ => Results.Problem("Error inesperado.")
             };
         })
-        .RequireAuthorization("Operador");
+        .RequireAuthorization("Operador")
+        .WithTags("Registros")
+        .WithName("RegistrarVenta");
+
 
         registros.MapGet("/{pk:int}", async (int pk, IRegistroOperacionService service, CancellationToken cancellationToken) =>
         {
             var result = await service.ObtenerPorPkAsync(pk, cancellationToken);
 
             return result is null ? Results.NotFound(new { error = "Registro no encontrado." }) : Results.Ok(result);
-        });
+        })
+        .WithTags("Registros")
+        .WithName("ObtenerRegistroPorPk");
+
 
         registros.MapGet("", async (int page, int pageSize, IRegistroOperacionService service, CancellationToken cancellationToken) =>
         {
@@ -53,7 +60,10 @@ public static class RegistroEndpoints
 
                 _ => Results.Problem("Error inesperado.")
             };
-        });
+        })
+        .WithTags("Registros")
+        .WithName("ObtenerRegistrosPaginados");
+
 
         registros.MapPatch("/{referencia}/cancelacion", async (string referencia, IRegistroOperacionService service, CancellationToken cancellationToken) =>
         {
@@ -82,7 +92,9 @@ public static class RegistroEndpoints
                 _ => Results.Problem("Error inesperado.")
             };
         })
-        .RequireAuthorization("Supervisor");
+        .RequireAuthorization("Supervisor")
+        .WithTags("Registros")
+        .WithName("CancelarRegistroPorReferencia");
 
         return app;
     }
