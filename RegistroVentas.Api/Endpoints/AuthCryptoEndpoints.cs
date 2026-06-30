@@ -43,7 +43,10 @@ public static class AuthCryptoEndpoints
             );
 
             return Results.Ok(new TokenResponse(token, "Bearer", expiresInSeconds));
-        });
+        })
+        .AllowAnonymous()
+        .WithTags("Autenticación")
+        .WithName("GenerarToken");
 
         app.MapPost("/crypto/encrypt", (EncryptRequest request, Aes256CryptoService crypto, ILoggerFactory loggerFactory) =>
         {
@@ -64,7 +67,10 @@ public static class AuthCryptoEndpoints
             logger.LogInformation("Valor cifrado correctamente con AES-256.");
 
             return Results.Ok(new EncryptResponse(secreto));
-        });
+        })
+        .AllowAnonymous()
+        .WithTags("Criptografía")
+        .WithName("CifrarSecreto");
 
         return app;
     }
